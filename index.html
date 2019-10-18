@@ -1,50 +1,24 @@
 <!--<a class="twitter-timeline" data-lang="en" data-height="450" data-theme="light" href="https://twitter.com/MSFT365Status?ref_src=twsrc%5Etfw">Tweets by MSFT365Status</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 -->
-<!DOCTYPE html>
-<html>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script>
+	$(document).ready(function() {
+		var xmlUrl = "https://azurestatuscdn.azureedge.net/en-us/status/feed/"; //URL to your XML document - may need to consider CORS
 
-  <head>
-    <meta charset="utf-8">
-    <title>Show RSS Feed</title>
-    <script src="http://www.google.com/jsapi"></script>
-    <script type="text/javascript">
-      google.load("feeds", "1")
-    </script>
-  </head>
-  <script>
-    
-    function fetchRSSFeed() {
-      var element = document.getElementById("rss_feed");
-      var feed = new google.feeds.Feed(element.dataset.feed);     
-      feed.setNumEntries(element.dataset.count);
-      feed.load(showRSSFeed);
-    }
-
-    function showRSSFeed(result) {
-
-      var html = "";
-
-      if (!result.error) {
-        var entries = result.feed.entries;
-        for (var i = 0; i < entries.length; i++) {
-          html += "<li><a href='" + entries[i].link + "'target='_blank'>" + entries[i].title + "</a></li>"
-        }
-      } else {
-        html = "Error: " + result.error.message;
-      }
-
-      document.getElementById("rss_feed").innerHTML = "<ul>" + html + "</ul>";
-    }
-
-    window.onload = function() {
-      fetchRSSFeed();
-    }
-  </script>
-
-  <body>
-    <div id="rss_feed" 
-         data-feed="https://status.azure.com/en-us/status/" 
-         data-count="12">Loading RSS Feed..</div>
-  </body>
-
-</html>
+		$.get(xmlUrl)
+		.done(function(a){
+			var container = $('#rssdisplay');
+			$(a).find('item').each(function(c,d) {
+				var e = $(d);
+				//--- example: <title>
+				var title = e.find('title').text();
+				container.append('<div class="rss-single"></div>').append('<h2>' + title + '</h2>');
+			});
+		})
+		.fail(function(){
+			var container = $('#rssdisplay');
+			container.append('<div class="rss-failure">Something has gone wrong. Please try again later.</div>');
+		});
+	});
+</script>
+<div id="rssdisplay"></div>
